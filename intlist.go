@@ -54,9 +54,7 @@ func (l *LinkedList) Insert(key int) bool {
 		return false
 	}
 	cur.m.Lock()
-	if (*linkedListNode)(atomic.LoadPointer(
-		(*unsafe.Pointer)(unsafe.Pointer(&cur.next)))) != next ||
-		cur.isDel == 1 {
+	if cur.next != next || cur.isDel == 1 {
 		cur.m.Unlock()
 		return l.Insert(key) // recursive retry, the defer is unavailable
 	}
@@ -78,8 +76,7 @@ func (l *LinkedList) Delete(key int) bool {
 		return l.Delete(key) // recursive retry, the defer is unavailable
 	}
 	cur.m.Lock()
-	if (*linkedListNode)(atomic.LoadPointer(
-		(*unsafe.Pointer)(unsafe.Pointer(&cur.next)))) != next || cur.isDel == 1 {
+	if cur.next != next || cur.isDel == 1 {
 		cur.m.Unlock()
 		next.m.Unlock()
 		return l.Delete(key) // recursive retry, the defer is unavailable
